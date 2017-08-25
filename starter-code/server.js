@@ -4,11 +4,11 @@ const pg = require('pg');
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const app = express();
 //following conString is for windows because my partner has windows
-//const conString = 'postgres://postgres:dogfood1@localhost:5432/kilvolt';
-const conString = 'postgres://localhost:5432';// TODO:(done) Don't forget to set your own conString
+const conString = 'postgres://postgres:dogfood1@localhost:5432/kilovolt';
+// const conString = 'postgres://localhost:5432';// TODO:(done) Don't forget to set your own conString
 const client = new pg.Client(conString);
 client.connect();
 client.on('error', function(error) {
@@ -25,7 +25,7 @@ app.get('/new', function(request, response) {
 
 app.get('/articles', function(request, response) {
   // REVIEW: This query will join the data together from our tables and send it back to the client.
-  // TODO:(done) Write a SQL query which joins all data from articles and authors tables on the author_id value of each
+  // DONE:(done) Write a SQL query which joins all data from articles and authors tables on the author_id value of each
   client.query(`SELECT *
     FROM articles
     INNER JOIN authors
@@ -58,8 +58,8 @@ app.post('/articles', function(request, response) {
     client.query(
       `SELECT author_id
       FROM authors
-      WHERE author = $1;`, // TODO:(done) Write a SQL query to retrieve the author_id from the authors table for the new article
-      [request.body.author], // TODO:(?) Add the author name as data for the SQL query
+      WHERE author = $1;`, // DONE:(done) Write a SQL query to retrieve the author_id from the authors table for the new article
+      [request.body.author], // DONE:(?) Add the author name as data for the SQL query
       function(err, result) {
         if (err) console.error(err)
         queryThree(result.rows[0].author_id) // This is our third query, to be executed when the second is complete. We are also passing the author_id into our third query
@@ -70,13 +70,13 @@ app.post('/articles', function(request, response) {
   function queryThree(author_id) {
     client.query(
       `INSERT INTO articles(title, author_id, category, "publishedOn", body)
-       VALUES ($1, $2, $3, $4, $5);`, // TODO:(?) Write a SQL query to insert the new article using the author_id from our previous query
+       VALUES ($1, $2, $3, $4, $5);`, // DONE:(?) Write a SQL query to insert the new article using the author_id from our previous query
       [request.body.title,
         author_id,
         request.body.category,
         request.body.publishedOn,
         request.body.body
-      ], // TODO:(?) Add the data from our new article, including the author_id, as data for the SQL query.
+      ], // DONE:(?) Add the data from our new article, including the author_id, as data for the SQL query.
       function(err) {
         if (err) console.error(err);
         response.send('insert complete');
@@ -86,9 +86,9 @@ app.post('/articles', function(request, response) {
 });
 
 app.put('/articles/:id', function(request, response) {
-  // TODO:(?) Write a SQL query to update an author record. Remember that our articles now have
+  // DONE:(?) Write a SQL query to update an author record. Remember that our articles now have
   // an author_id property, so we can reference it from the request.body.
-  // TODO:(?) Add the required values from the request as data for the SQL query to interpolate
+  // DONE:(?) Add the required values from the request as data for the SQL query to interpolate
   client.query(
     `UPDATE authors
     SET author=$1
@@ -98,9 +98,9 @@ app.put('/articles/:id', function(request, response) {
     ]
   )
   .then(function() {
-    // TODO:(?) Write a SQL query to update an article record. Keep in mind that article records
+    // DONE:(?) Write a SQL query to update an article record. Keep in mind that article records
     // now have an author_id, in addition to title, category, publishedOn, and body.
-    // TODO:(?) Add the required values from the request as data for the SQL query to interpolate
+    // DONE:(?) Add the required values from the request as data for the SQL query to interpolate
     client.query(
       `UPDATE articles
       SET title=$1, author_id=$2, category=$3, "publishedOn"=$4, body=$5
